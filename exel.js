@@ -1,13 +1,17 @@
-const XlsxPopulate = require('xlsx-populate');
-const fs = require('fs');
-const path = require('path');
+const XlsxPopulate = require("xlsx-populate");
+const fs = require("fs");
+const path = require("path");
 
 // Putanja do Excel datoteke
-const filePaths = ['/home/milos/Downloads/output.xlsx', '/home/milos/Downloads/output2.xlsx', '/home/milos/Downloads/output3.xlsx',];
+const filePaths = [
+  "C:/Users/Smeska i Smesko/Downloads/output.xlsx",
+  "C:/Users/Smeska i Smesko/Downloads/output2.xlsx",
+  "C:/Users/Smeska i Smesko/Downloads/output3.xlsx",
+];
 
 // Funkcija za konverziju broja kolone u ime kolone
 function columnNumberToName(columnNumber) {
-  let columnName = '';
+  let columnName = "";
   while (columnNumber > 0) {
     const remainder = (columnNumber - 1) % 26;
     columnName = String.fromCharCode(65 + remainder) + columnName;
@@ -20,7 +24,12 @@ function columnNumberToName(columnNumber) {
 async function extractNamesAndCreateFiles(filePaths) {
   const firstFilePath = filePaths[0];
   const folderPath = path.dirname(firstFilePath);
-  const newFolderPath = path.join(folderPath, 'Refundacije');
+
+  // Putanja do direktorijuma Downloads
+  const downloadsPath = "C:/Users/Smeska i Smesko/Downloads";
+
+  // Kreiranje putanje do direktorijuma Refundacije
+  const newFolderPath = path.join(downloadsPath, "Refundacije");
 
   // Kreiranje novog foldera
   fs.mkdirSync(newFolderPath, { recursive: true });
@@ -59,8 +68,8 @@ async function extractNamesAndCreateFiles(filePaths) {
 // Izvlačenje imena iz fajlova i generisanje novih fajlova
 extractNamesAndCreateFiles(filePaths)
   .then(() => {
-    console.log('Generisanje fajlova je završeno.');
+    console.log("Generisanje fajlova je završeno.");
   })
   .catch((error) => {
-    console.error('Došlo je do greške prilikom generisanja fajlova:', error);
+    console.error("Došlo je do greške prilikom generisanja fajlova:", error);
   });
