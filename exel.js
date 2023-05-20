@@ -3,9 +3,9 @@ const fs = require("fs");
 const path = require("path");
 
 const filePaths = [
-  "C:/Users/Smeska i Smesko/Downloads/output.xlsx",
-  "C:/Users/Smeska i Smesko/Downloads/output2.xlsx",
-  "C:/Users/Smeska i Smesko/Downloads/output3.xlsx",
+  "/home/milos/Downloads/output.xlsx",
+  "/home/milos/Downloads/output2.xlsx",
+  "/home/milos/Downloads/output3.xlsx",
 ];
 
 function columnNumberToName(columnNumber) {
@@ -24,7 +24,7 @@ async function extractNamesAndCreateFiles(filePaths) {
 
   const firstFilePath = filePaths[0];
   const folderPath = path.dirname(firstFilePath);
-  const downloadsPath = "C:/Users/Smeska i Smesko/Downloads";
+  const downloadsPath = "/home/milos/Downloads";
   const newFolderPath = path.join(downloadsPath, "Refundacije");
 
   fs.mkdirSync(newFolderPath, { recursive: true });
@@ -47,18 +47,6 @@ async function extractNamesAndCreateFiles(filePaths) {
 
       const newFilePath = path.join(newFolderPath, `${name}.xlsx`);
 
-      const newWorkbook = await XlsxPopulate.fromBlankAsync();
-      const newSheet = newWorkbook.sheet(0);
-
-      for (let k = 1; k <= columnCount; k++) {
-        const columnLetter = columnNumberToName(k);
-        const firstCell = firstSheet.cell(`${columnLetter}1`);
-        const value = firstCell.value();
-        newSheet.cell(`${columnLetter}1`).value(value);
-      }
-
-      await newWorkbook.toFileAsync(newFilePath);
-
       if (!nameOccurrences[name]) {
         nameOccurrences[name] = [];
       }
@@ -69,6 +57,37 @@ async function extractNamesAndCreateFiles(filePaths) {
         rowValues.push(cellValue);
       }
       nameOccurrences[name].push(rowValues);
+
+      if (fs.existsSync(newFilePath)) {
+        const existingWorkbook = await XlsxPopulate.fromFileAsync(newFilePath);
+        const existingSheet = existingWorkbook.sheet(0);
+
+        const existingRowCount = existingSheet.usedRange().endCell().rowNumber();
+        const newRow = existingRowCount + 1;
+
+        for (let k = 1; k <= columnCount; k++) {
+          const columnLetter = columnNumberToName(k);
+          const value = sheet.cell(`${columnLetter}${j}`).value();
+          existingSheet.cell(`${columnLetter}${newRow}`).value(value);
+        }
+
+        await existingWorkbook.toFileAsync(newFilePath);
+      } else {
+        const newWorkbook = await XlsxPopulate.fromBlankAsync();
+        const newSheet = newWorkbook.sheet(0);
+
+        for (let k = 1; k <= columnCount; k++) {
+          const columnLetter = columnNumberToName(k);
+          const firstCell = firstSheet.cell(`${columnLetter}1`);
+          const value = firstCell.value();
+          newSheet.cell(`${columnLetter}1`).value(value);
+
+          const cellValue = sheet.cell(`${columnLetter}${j}`).value();
+          newSheet.cell(`${columnLetter}2`).value(cellValue);
+        }
+
+        await newWorkbook.toFileAsync(newFilePath);
+      }
     }
   }
 
@@ -89,4 +108,3 @@ extractNamesAndCreateFiles(filePaths)
   .catch((error) => {
     console.error("Došlo je do greške prilikom generisanja fajlova:", error);
   });
-
