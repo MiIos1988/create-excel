@@ -59,7 +59,16 @@ async function extractNamesAndCreateFiles(filePaths) {
 
       await newWorkbook.toFileAsync(newFilePath);
 
-      nameOccurrences[name] = nameOccurrences[name] ? nameOccurrences[name] + 1 : 1;
+      if (!nameOccurrences[name]) {
+        nameOccurrences[name] = [];
+      }
+      const rowValues = [];
+      for (let k = 1; k <= columnCount; k++) {
+        const columnLetter = columnNumberToName(k);
+        const cellValue = sheet.cell(`${columnLetter}${j}`).value();
+        rowValues.push(cellValue);
+      }
+      nameOccurrences[name].push(rowValues);
     }
   }
 
@@ -69,11 +78,15 @@ async function extractNamesAndCreateFiles(filePaths) {
 extractNamesAndCreateFiles(filePaths)
   .then(({ generatedFileNames, nameOccurrences }) => {
     generatedFileNames.forEach((name) => {
-      const occurrence = nameOccurrences[name];
-      console.log(`${name} (${occurrence} puta)`);
+      const occurrences = nameOccurrences[name];
+      console.log(`Podaci za ime: ${name}`);
+      occurrences.forEach((rowValues, index) => {
+        console.log(`Red ${index + 1}: ${rowValues}`);
+      });
     });
     console.log("Generisanje fajlova je završeno.");
   })
   .catch((error) => {
     console.error("Došlo je do greške prilikom generisanja fajlova:", error);
   });
+
