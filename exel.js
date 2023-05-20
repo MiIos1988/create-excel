@@ -2,7 +2,7 @@ const XlsxPopulate = require("xlsx-populate");
 const fs = require("fs");
 const path = require("path");
 
-// Putanja do Excel datoteka
+// Putanja do Excel datoteke
 const filePaths = [
   "C:/Users/Smeska i Smesko/Downloads/output.xlsx",
   "C:/Users/Smeska i Smesko/Downloads/output2.xlsx",
@@ -46,14 +46,9 @@ async function extractNamesAndCreateFiles(filePaths) {
 
     const rowCount = sheet.usedRange().endCell().rowNumber();
     for (let j = 2; j <= rowCount; j++) {
-      const rowValues = [];
-      for (let k = 1; k <= columnCount; k++) {
-        const cell = sheet.cell(`${columnNumberToName(k)}${j}`);
-        const value = cell.value();
-        rowValues.push(value);
-      }
+      const cell = sheet.cell(`A${j}`);
+      const name = cell.value();
 
-      const name = rowValues[0];
       const newFilePath = path.join(newFolderPath, `${name}.xlsx`);
 
       const newWorkbook = await XlsxPopulate.fromBlankAsync();
@@ -66,18 +61,10 @@ async function extractNamesAndCreateFiles(filePaths) {
         const value = firstCell.value();
         newSheet.cell(`${columnLetter}1`).value(value);
       }
-
-      // Kopiranje vrednosti reda u novi fajl
-      for (let k = 0; k < rowValues.length; k++) {
-        const value = rowValues[k];
-        newSheet.cell(`${columnNumberToName(k + 1)}2`).value(value);
-      }
-
       await newWorkbook.toFileAsync(newFilePath);
     }
   }
 }
-
 // Izvlačenje imena iz fajlova i generisanje novih fajlova
 extractNamesAndCreateFiles(filePaths)
   .then(() => {
