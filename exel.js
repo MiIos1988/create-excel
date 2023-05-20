@@ -69,6 +69,10 @@ async function extractNamesAndCreateFiles(filePaths) {
           const columnLetter = columnNumberToName(k);
           const value = sheet.cell(`${columnLetter}${j}`).value();
           existingSheet.cell(`${columnLetter}${newRow}`).value(value);
+
+          // Stilizacija tabela
+          existingSheet.cell(`${columnLetter}${newRow}`).style({ horizontalAlignment: "center" });
+          existingSheet.column(columnLetter).width(columnLetter === "A" ? 25 : 17);
         }
 
         await existingWorkbook.toFileAsync(newFilePath);
@@ -84,6 +88,11 @@ async function extractNamesAndCreateFiles(filePaths) {
 
           const cellValue = sheet.cell(`${columnLetter}${j}`).value();
           newSheet.cell(`${columnLetter}2`).value(cellValue);
+
+          // Stilizacija tabela
+          newSheet.cell(`${columnLetter}1`).style({ horizontalAlignment: "center" });
+          newSheet.cell(`${columnLetter}2`).style({ horizontalAlignment: "center" });
+          newSheet.column(columnLetter).width(columnLetter === "A" ? 25 : 17);
         }
 
         await newWorkbook.toFileAsync(newFilePath);
@@ -96,7 +105,6 @@ async function extractNamesAndCreateFiles(filePaths) {
 
 extractNamesAndCreateFiles(filePaths)
   .then(({ generatedFileNames, nameOccurrences }) => {
-    // Ispisivanje informacija u konzoli je izostavljeno.
     console.log("Generisanje fajlova je završeno.");
   })
   .catch((error) => {
