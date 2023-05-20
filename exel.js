@@ -2,14 +2,12 @@ const XlsxPopulate = require("xlsx-populate");
 const fs = require("fs");
 const path = require("path");
 
-// Putanja do Excel datoteke
 const filePaths = [
   "C:/Users/Smeska i Smesko/Downloads/output.xlsx",
   "C:/Users/Smeska i Smesko/Downloads/output2.xlsx",
   "C:/Users/Smeska i Smesko/Downloads/output3.xlsx",
 ];
 
-// Funkcija za konverziju broja kolone u ime kolone
 function columnNumberToName(columnNumber) {
   let columnName = "";
   while (columnNumber > 0) {
@@ -20,21 +18,17 @@ function columnNumberToName(columnNumber) {
   return columnName;
 }
 
-// Funkcija za izvlačenje imena iz fajlova i generisanje novih fajlova
 async function extractNamesAndCreateFiles(filePaths) {
+  const generatedFileNames = new Set();
+  const nameOccurrences = {};
+
   const firstFilePath = filePaths[0];
   const folderPath = path.dirname(firstFilePath);
-
-  // Putanja do direktorijuma Downloads
   const downloadsPath = "C:/Users/Smeska i Smesko/Downloads";
-
-  // Kreiranje putanje do direktorijuma Refundacije
   const newFolderPath = path.join(downloadsPath, "Refundacije");
 
-  // Kreiranje novog foldera
   fs.mkdirSync(newFolderPath, { recursive: true });
 
-  // Kopiranje rasporeda kolona iz prvog fajla
   const firstWorkbook = await XlsxPopulate.fromFileAsync(firstFilePath);
   const firstSheet = firstWorkbook.sheet(0);
   const columnCount = firstSheet.usedRange().endCell().columnNumber();
@@ -49,25 +43,35 @@ async function extractNamesAndCreateFiles(filePaths) {
       const cell = sheet.cell(`A${j}`);
       const name = cell.value();
 
+      generatedFileNames.add(name);
+
       const newFilePath = path.join(newFolderPath, `${name}.xlsx`);
 
       const newWorkbook = await XlsxPopulate.fromBlankAsync();
       const newSheet = newWorkbook.sheet(0);
 
-      // Kopiranje rasporeda kolona iz prvog fajla u novi fajl
       for (let k = 1; k <= columnCount; k++) {
         const columnLetter = columnNumberToName(k);
         const firstCell = firstSheet.cell(`${columnLetter}1`);
         const value = firstCell.value();
         newSheet.cell(`${columnLetter}1`).value(value);
       }
+
       await newWorkbook.toFileAsync(newFilePath);
+
+      nameOccurrences[name] = nameOccurrences[name] ? nameOccurrences[name] + 1 : 1;
     }
   }
+
+  return { generatedFileNames, nameOccurrences };
 }
-// Izvlačenje imena iz fajlova i generisanje novih fajlova
+
 extractNamesAndCreateFiles(filePaths)
-  .then(() => {
+  .then(({ generatedFileNames, nameOccurrences }) => {
+    generatedFileNames.forEach((name) => {
+      const occurrence = nameOccurrences[name];
+      console.log(`${name} (${occurrence} puta)`);
+    });
     console.log("Generisanje fajlova je završeno.");
   })
   .catch((error) => {
