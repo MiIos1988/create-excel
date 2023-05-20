@@ -96,13 +96,7 @@ async function extractNamesAndCreateFiles(filePaths) {
 
 extractNamesAndCreateFiles(filePaths)
   .then(({ generatedFileNames, nameOccurrences }) => {
-    generatedFileNames.forEach((name) => {
-      const occurrences = nameOccurrences[name];
-      console.log(`Podaci za ime: ${name}`);
-      occurrences.forEach((rowValues, index) => {
-        console.log(`Red ${index + 1}: ${rowValues}`);
-      });
-    });
+    // Ispisivanje informacija u konzoli je izostavljeno.
     console.log("Generisanje fajlova je završeno.");
   })
   .catch((error) => {
