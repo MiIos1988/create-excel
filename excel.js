@@ -70,7 +70,7 @@ async function extractNamesAndCreateFiles(filePaths) {
           const value = sheet.cell(`${columnLetter}${j}`).value();
           existingSheet.cell(`${columnLetter}${newRow}`).value(value);
 
-          // Stilizacija tabela
+          // Table styling
           existingSheet.cell(`${columnLetter}${newRow}`).style({ horizontalAlignment: "center" });
           existingSheet.column(columnLetter).width(columnLetter === "A" ? 25 : 17);
         }
@@ -89,7 +89,7 @@ async function extractNamesAndCreateFiles(filePaths) {
           const cellValue = sheet.cell(`${columnLetter}${j}`).value();
           newSheet.cell(`${columnLetter}2`).value(cellValue);
 
-          // Stilizacija tabela
+          // Table styling
           newSheet.cell(`${columnLetter}1`).style({ horizontalAlignment: "center" });
           newSheet.cell(`${columnLetter}2`).style({ horizontalAlignment: "center" });
           newSheet.column(columnLetter).width(columnLetter === "A" ? 25 : 17);
@@ -105,8 +105,8 @@ async function extractNamesAndCreateFiles(filePaths) {
 
 extractNamesAndCreateFiles(filePaths)
   .then(({ generatedFileNames, nameOccurrences }) => {
-    console.log("Generisanje fajlova je završeno.");
+    console.log("File generation completed.");
   })
   .catch((error) => {
-    console.error("Došlo je do greške prilikom generisanja fajlova:", error);
+    console.error("An error occurred during file generation:", error);
   });
