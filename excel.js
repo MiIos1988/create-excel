@@ -23,7 +23,6 @@ async function extractNamesAndCreateFiles(filePaths) {
   const nameOccurrences = {};
 
   const firstFilePath = filePaths[0];
-  const folderPath = path.dirname(firstFilePath);
   const downloadsPath = "/home/milos/Downloads";
   const newFolderPath = path.join(downloadsPath, "Refundacije");
 
