@@ -24,7 +24,7 @@ async function extractNamesAndCreateFiles(filePaths) {
 
   const firstFilePath = filePaths[0];
   const downloadsPath = "/home/milos/Downloads";
-  const newFolderPath = path.join(downloadsPath, "Refundacije");
+  const newFolderPath = path.join(downloadsPath, "Refunds");
 
   fs.mkdirSync(newFolderPath, { recursive: true });
 
